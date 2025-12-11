@@ -1,0 +1,48 @@
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
+import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ObjectId } from 'mongodb';
+
+@Injectable()
+export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly usersRepository: MongoRepository<User>,
+  ) {}
+
+  async create(dto: CreateUserDto) {
+    const existing = await this.usersRepository.findOne({ where: { email: dto.email } });
+    if (existing) throw new ConflictException('Email already in use');
+
+    const existingUsername = await this.usersRepository.findOne({ where: { username: dto.username } });
+    if (existingUsername) throw new ConflictException('Username already in use');
+
+    const saltRounds = 10;
+    const hashed = await bcrypt.hash(dto.password, saltRounds);
+
+    const user = this.usersRepository.create({
+      username: dto.username,
+      email: dto.email,
+      password: hashed, // stored in `password` field
+    });
+
+    const saved = await this.usersRepository.save(user as any);
+    const { password: _pw, ...rest } = saved as any;
+    return { id: saved._id.toHexString(), username: rest.username, email: rest.email };
+  }
+
+  async findByEmail(email: string) {
+    // return full document (including hashed password) so AuthService can compare
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findById(id: string) {
+    const objId = new ObjectId(id);
+    const user = await this.usersRepository.findOne({ where: { _id: objId } });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+}
