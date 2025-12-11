@@ -1,6 +1,7 @@
 import ThemeColors from "@/components/themed-view";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   Animated,
   Dimensions,
@@ -99,14 +100,24 @@ import type { ComponentProps } from "react";
 // Extract valid Feather `name` type
 type FeatherName = ComponentProps<typeof Feather>["name"];
 
-const MODULES: { title: string; icon: FeatherName }[] = [
-  { title: "Lifestyle & Daily Essentials", icon: "shopping-bag" },
-  { title: "Health & Wellness", icon: "heart" },
-  { title: "Travel & Planning", icon: "map" },
-  { title: "Work, Studies & Productivity", icon: "briefcase" },
-  { title: "Events, Wishes & Celebrations", icon: "gift" },
-  { title: "Notes, Credentials & Smart AI", icon: "edit" },
+// const MODULES: { title: string; icon: FeatherName }[] = [
+//   { title: "Lifestyle & Daily Essentials", icon: "shopping-bag" },
+//   { title: "Health & Wellness", icon: "heart" },
+//   { title: "Travel & Planning", icon: "map" },
+//   { title: "Work, Studies", icon: "briefcase" },
+//   { title: "Events & Celebrations", icon: "gift" },
+//   { title: "Notes, Credentials", icon: "edit" },
+// ];
+
+const MODULES: { title: string; icon: FeatherName; screen:string | null }[] = [
+  { title: "Lifestyle & Daily Essentials", icon: "shopping-bag", screen: null },
+  { title: "Health & Wellness", icon: "heart", screen: null },
+  { title: "Travel & Planning", icon: "map", screen: "TravelPlanning" },
+  { title: "Work, Studies", icon: "briefcase", screen: null },
+  { title: "Events & Celebrations", icon: "gift", screen: null },
+  { title: "Notes, Credentials", icon: "edit", screen: null },
 ];
+
 
 const SUBTITLES = [
   "🔔 Never miss what matters most",
@@ -228,15 +239,6 @@ const RemindersTab: React.FC = () => {
 // --- Module animations ---
  const rotation = useRef(new Animated.Value(0)).current;
 
-  // useEffect(() => {
-  //   Animated.timing(rotation, {
-  //     toValue: showModules ? 1 : 0,
-  //     duration: 200,
-  //     easing: Easing.out(Easing.ease),
-  //     useNativeDriver: true,
-  //   }).start();
-  // }, [showModules, rotation]);
-
   const rotateInterpolate = rotation.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "45deg"], // 0 = plus, 45deg = looks like close
@@ -327,6 +329,14 @@ const handleFabPress = () => {
     closeModules();
   }
 };
+
+  const navigation = useNavigation();
+
+  const handleModulePress = (item: typeof MODULES[number]) => {
+      if (item.screen) {
+        navigation.navigate(item.screen as never);
+        return;
+      }}
 
 
   // --- Search bar animation (width) ---
@@ -630,13 +640,14 @@ const handleFabPress = () => {
                   <TouchableOpacity
                     style={styles.moduleBubble}
                     activeOpacity={0.9}
-                  >
+                    onPress={() => handleModulePress(item)}>
                     <Text style={styles.moduleBubbleText}>{item.title}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     style={styles.moduleBubbleIcon}
                     activeOpacity={0.9}
+                    onPress={() => handleModulePress(item)}
                   >
                     <Feather name={item.icon} size={26} color="#d7d9deff" />
                   </TouchableOpacity>
