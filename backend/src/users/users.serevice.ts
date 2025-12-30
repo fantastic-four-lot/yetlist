@@ -17,21 +17,17 @@ export class UsersService {
     const existing = await this.usersRepository.findOne({ where: { email: dto.email } });
     if (existing) throw new ConflictException('Email already in use');
 
-    const existingUsername = await this.usersRepository.findOne({ where: { username: dto.username } });
-    if (existingUsername) throw new ConflictException('Username already in use');
-
     const saltRounds = 10;
     const hashed = await bcrypt.hash(dto.password, saltRounds);
 
     const user = this.usersRepository.create({
-      username: dto.username,
       email: dto.email,
       password: hashed, // stored in `password` field
     });
 
     const saved = await this.usersRepository.save(user as any);
     const { password: _pw, ...rest } = saved as any;
-    return { id: saved._id.toHexString(), username: rest.username, email: rest.email };
+    return { id: saved._id.toHexString(), email: rest.email };
   }
 
   async findByEmail(email: string) {
