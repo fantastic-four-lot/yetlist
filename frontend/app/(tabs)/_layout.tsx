@@ -5,22 +5,11 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform,Image } from 'react-native';
 import { BlurView } from 'expo-blur';
-import LottieView from 'lottie-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import { StatusBar } from 'expo-status-bar';
-
-// import { ThemedView } from '@/components/themed-view';
-
-
-// const TAB_CONTAINER_MARGIN_HORIZONTAL = 15;
-// const TAB_CONTAINER_BASE_BOTTOM = 16; // base spacing above safe area
 
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
-    const insets = useSafeAreaInsets();
-
-      // Compute bottom offset: prioritize safe area inset, then add base margin.
-  const bottomOffset = (insets.bottom || 0)
-  //  + TAB_CONTAINER_BASE_BOTTOM;
+const insets = useSafeAreaInsets();
+const bottomOffset = (insets.bottom || 0)
   return (
     <>
     <View style={[  styles.tabContainer, { bottom: bottomOffset}]}>
@@ -104,24 +93,6 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={25} name="house" color={color} />,
-        //   tabBarIcon: ({ focused }) => (
-        // <LottieView
-        //   source={require('../../assets/lottie/icons8-house.json')}
-        //   // autoPlay={focused}
-        //   // loop={focused}
-        //   style={{ width: 40, height: 40 }}
-        // />
-        // )
-        // tabBarIcon: ({ focused }) => (
-        // <Image
-        //   source={
-        //     focused
-        //       ? require('../../assets/images/icons8-house-64.png')
-        //       : require('../../assets/gifs/icons8-house.gif')
-        //   }
-        //   style={{ width: 30, height: 30 }}
-        // />
-        // )
         }}
       />
       <Tabs.Screen
@@ -160,7 +131,6 @@ const styles = StyleSheet.create({
     shadowColor: '#4b1177ff',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
     elevation: 15,
     borderWidth: 1,
     borderColor: 'rgba(183, 13, 235, 0.78)',
@@ -171,7 +141,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Platform.OS === 'ios' ? 12 : 10,
     borderRadius: 20,
-    // borderColor: 'rgba(255, 255, 255, 1)',
   },
   tabItem: {
     flex: 1,
