@@ -3,7 +3,9 @@
 // A lightweight API client for login/register using fetch.
 // Adjust BASE_URL and endpoints to match your backend.
 
-export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ;
+export const BASE_URL = 'http://192.168.200.182:3000'
+// export const BASE_URL = "http://localhost:3000";?
+
 
 export type LoginInput = {
   email: string;
@@ -17,12 +19,12 @@ export type RegisterInput = {
 };
 
 export type AuthResponse = {
-  token: string; // JWT or session token
+  access_token: string; // JWT or session token
   user: {
     id: string;
     email: string;
     name?: string;
-    [key: string]: any;
+    // [key: string]: any;
   };
 };
 
@@ -42,6 +44,7 @@ export class ApiError extends Error {
 
 async function request<T>(path: string, options: RequestInit): Promise<T> {
   const url = `${BASE_URL}${path}`;
+    // console.log('API Request:', { url, options });
 
   try {
     const res = await fetch(url, {
@@ -65,9 +68,11 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
       throw new ApiError(message, { status: res.status, details: data });
     }
 
+    // console.log('API Response:', data);
     return data as T;
   } catch (err: any) {
     // Network errors, parsing errors, etc.
+    // console.error('API Request error:', err);
     if (err instanceof ApiError) throw err;
     throw new ApiError(err?.message ?? 'Network error', { details: err });
   }
@@ -79,10 +84,12 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
  * Response: { token, user }
  */
 export async function loginApi(input: LoginInput): Promise<AuthResponse> {
+    // console.log('loginApi called', input);
   return request<AuthResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(input),
   });
+  
 }
 
 /**
@@ -91,7 +98,7 @@ export async function loginApi(input: LoginInput): Promise<AuthResponse> {
  * Response: { token, user }
  */
 export async function registerApi(input: RegisterInput): Promise<AuthResponse> {
-  return request<AuthResponse>('/auth/register', {
+  return request<AuthResponse>('/auth/signup', {
     method: 'POST',
     body: JSON.stringify(input),
   });

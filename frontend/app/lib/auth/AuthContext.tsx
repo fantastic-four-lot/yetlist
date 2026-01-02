@@ -88,7 +88,7 @@
 
 
 // lib/auth/AuthContext.tsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, use, useContext, useEffect, useState } from 'react';
 import { loginApi, registerApi, meApi, AuthResponse } from './authApi';
 import { getToken, saveToken, clearToken } from './storage';
 import { router } from 'expo-router';
@@ -115,13 +115,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token = await getToken();
         if (token) {
-          const me = await meApi(token);
-          setUser(me);
+          // const { id,email,name } = await meApi(token);
+          setUser(await meApi(token));
+      
+          
         } else {
           setUser(null);
         }
       } catch (e) {
-        console.warn('Session check failed:', e);
+        // console.warn('Session check failed:', e);
         setUser(null);
         await clearToken();
       } finally {
@@ -130,17 +132,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     })();
   }, []);
 
+
   const login = async (email: string, password: string) => {
-    const { token, user } = await loginApi({ email, password });
-    await saveToken(token);
+    const { access_token, user } = await loginApi({ email, password });
+    // console.log('Login successful, saving token:', access_token);
+    await saveToken(access_token);
     setUser(user);
     router.replace('/'); // Navigate to home
   };
 
   const register = async (email: string, password: string, name?: string) => {
-    const { token, user } = await registerApi({ email, password, name });
-    await saveToken(token);
-    setUser(user);
+    const { access_token, user } = await registerApi({ email, password, name });
+    // await saveToken(access_token);
+    // setUser(user);
     router.replace('/(auth)/login');
   };
 

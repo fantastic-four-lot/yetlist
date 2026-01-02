@@ -23,11 +23,12 @@ export class UsersService {
     const user = this.usersRepository.create({
       email: dto.email,
       password: hashed, // stored in `password` field
+      name: dto.name,
     });
 
     const saved = await this.usersRepository.save(user as any);
     const { password: _pw, ...rest } = saved as any;
-    return { id: saved._id.toHexString(), email: rest.email };
+    return { id: saved._id.toHexString(), email: rest.email, name: rest.name };
   }
 
   async findByEmail(email: string) {

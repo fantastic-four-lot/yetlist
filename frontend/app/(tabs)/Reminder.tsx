@@ -96,6 +96,7 @@ const reminders = [
 ] as const;
 
 import type { ComponentProps } from "react";
+import { router } from "expo-router";
 
 // Extract valid Feather `name` type
 type FeatherName = ComponentProps<typeof Feather>["name"];
@@ -112,7 +113,7 @@ type FeatherName = ComponentProps<typeof Feather>["name"];
 const MODULES: { title: string; icon: FeatherName; screen:string | null }[] = [
   { title: "Lifestyle & Daily Essentials", icon: "shopping-bag", screen: null },
   { title: "Health & Wellness", icon: "heart", screen: null },
-  { title: "Travel & Planning", icon: "map", screen: "TravelPlanning" },
+  { title: "Travel & Planning", icon: "map", screen: "/reminder/TravelPlanning" },
   { title: "Work, Studies", icon: "briefcase", screen: null },
   { title: "Events & Celebrations", icon: "gift", screen: null },
   { title: "Notes, Credentials", icon: "edit", screen: null },
@@ -127,12 +128,12 @@ const SUBTITLES = [
 ];
 
 
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+// if (
+//   Platform.OS === "android" &&
+//   UIManager.setLayoutAnimationEnabledExperimental
+// ) {
+//   UIManager.setLayoutAnimationEnabledExperimental(true);
+// }
 
 const RemindersTab: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -145,7 +146,7 @@ const RemindersTab: React.FC = () => {
   const moduleContainerAnim = useRef(new Animated.Value(0)).current;
   const moduleItemAnims = useRef(MODULES.map(() => new Animated.Value(0))).current;
 
-
+  // console.log("Safe area insets:");
   const insets = useSafeAreaInsets();
   const bottomOffset = insets.bottom || 0;
   const { height: screenH } = Dimensions.get("screen");
@@ -203,8 +204,7 @@ const RemindersTab: React.FC = () => {
     return () => clearInterval(id);
   }, [subtitleOpacity, subtitleTranslateY]);
 
-  const { themeContainerStyle, themeTextStyle, themeCardStyle } =
-    ThemeColors();
+  const { themeContainerStyle, themeTextStyle, themeCardStyle } = ThemeColors();
 
   const renderPriorityBadge = (priority: string) => {
     if (priority === "high") {
@@ -332,11 +332,17 @@ const handleFabPress = () => {
 
   const navigation = useNavigation();
 
+  // const handleModulePress = (item: typeof MODULES[number]) => {
+  //     if (item.screen) {
+  //       navigation.navigate(item.screen as never);
+  //       return;
+  //     }}
   const handleModulePress = (item: typeof MODULES[number]) => {
-      if (item.screen) {
-        navigation.navigate(item.screen as never);
-        return;
-      }}
+  if (item.screen) {
+    closeModules();
+    router.push(item.screen as any);
+  }
+};
 
 
   // --- Search bar animation (width) ---

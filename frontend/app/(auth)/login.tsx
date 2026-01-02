@@ -110,7 +110,7 @@ export default function SignInScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-    console.log({ email, password });
+    // console.log({ email, password });
   };
 
   const goToRegister = () => {
@@ -154,7 +154,7 @@ return (
 
               {/* Content */}
               <View style={styles.content}>
-                <Text style={styles.title}>Welcome Back</Text>
+                <Text style={[styles.title,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>Welcome Back</Text>
 
                 {/* Illustration */}
                 <View style={styles.illustrationWrapper}>
@@ -217,7 +217,7 @@ return (
 
                 {/* Bottom link */}
                 <View style={styles.bottomRow}>
-                  <Text style={styles.bottomText}>Don’t have an account? </Text>
+                  <Text style={[styles.bottomText,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>Don’t have an account? </Text>
                   <TouchableOpacity onPress={goToRegister} activeOpacity={0.7}>
                     <Text style={styles.linkText}>Sign Up</Text>
                   </TouchableOpacity>

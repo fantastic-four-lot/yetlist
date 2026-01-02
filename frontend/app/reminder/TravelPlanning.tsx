@@ -9,11 +9,13 @@ import {
   ScrollView,
   Animated,
   Easing,
+  Modal,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import ThemeColors from "@/components/themed-view";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Dimensions,
   LayoutAnimation,
@@ -24,11 +26,12 @@ import {
   UIManager,
                                                            
 } from "react-native";
-import Badge from "../components/ui/Badge";
-import Card from "../components/ui/Card";
+import Badge from "../../components/ui/Badge";
+import Card from "../../components/ui/Card";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FloatingSearch } from "@/components/FloatingSearch";
-import { useColorScheme } from '@/hooks/use-color-scheme'; // you already use something similar
+import { useColorScheme } from '@/hooks/use-color-scheme'; 
+import { AddLeaveBottomSheet } from "@/components/AddLeaveBottomSheet";
 
 // ---------- Types (aligned with backend) ----------
 
@@ -41,8 +44,9 @@ export interface TravelLeaveEntry {
   leaveType: "CL" | "SL" | "PL" | "WFH" | "OTHER";
   partOfDay: "full" | "1st half" | "2nd half";
   reason?: string;
-  approvalStatus: "pending" | "approved" | "rejected";
-  remindAt?: string; // ISO
+  remainder_msg:string;
+  remindAt?: string[]; 
+  notify?:boolean;
 }
 
 export interface TravelTrip {
@@ -118,32 +122,49 @@ const dummyLeaveEntries: TravelLeaveEntry[] = [
     leaveType: "CL",
     partOfDay: "full",
     reason: "Family function",
-    approvalStatus: "approved",
-    remindAt: "2021-02-14T20:00:00.000Z",
+    remainder_msg: "approved",
+    remindAt: ["2021-02-14T20:00:00.000Z"],
+    notify: true,
   },
   {
     leaveDate: "2025-07-01",
     leaveType: "WFH",
     partOfDay: "1st half",
     reason: "Delivery expected",
-    approvalStatus: "pending",
-    remindAt: "2022-04-30T21:00:00.000Z",
+    remainder_msg: "pending",
+    remindAt: ["2022-04-30T21:00:00.000Z"]
   },
   {
     leaveDate: "2025-03-13",
     leaveType: "CL",
     partOfDay: "full",
     reason: "Family function",
-    approvalStatus: "approved",
-    remindAt: "2024-03-14T20:00:00.000Z",
+    remainder_msg: "rejected",
+    remindAt:[ "2024-03-14T20:00:00.000Z"]
   },
   {
     leaveDate: "2025-07:02".replace(":", "-"),
     leaveType: "WFH",
     partOfDay: "1st half",
     reason: "Delivery expected",
-    approvalStatus: "pending",
-    remindAt: "2023-05-30T21:00:00.000Z",
+    remainder_msg: "pending",
+    remindAt: ["2023-05-30T21:00:00.000Z"]
+  },
+  {
+    leaveDate: "2025-03-18",
+    leaveType: "CL",
+    partOfDay: "full",
+    reason: "Family function",
+    remainder_msg: "approved",
+    remindAt: ["2026-03-14T20:00:00.000Z"]
+  },
+  {
+    leaveDate: "2025-07:09",
+    leaveType: "WFH",
+    partOfDay: "1st half",
+    reason: "Delivery expected",
+    remainder_msg: "pending",
+    remindAt: ["2023-05-30T21:00:00.000Z"]
   },
 
 ];
@@ -287,15 +308,16 @@ const TABS: { key: TabKey; label: string; icon: keyof typeof Ionicons.glyphMap }
 ];
 
 export const TravelPlanningScreen: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<TabKey>("leaves");
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const translateYAnim = useRef(new Animated.Value(20)).current;
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchBar, setSearchBar] = useState(false); // false = collapsed, true = open input
-    const [showModules, setShowModules] = useState([]);
-    const [subtitleIndex, setSubtitleIndex] = useState(0);
-    const [compactStats, setCompactStats] = useState(false);
-    const colorScheme = useColorScheme();
+  const [activeTab, setActiveTab] = useState<TabKey>("leaves");
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateYAnim = useRef(new Animated.Value(20)).current;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchBar, setSearchBar] = useState(false); // false = collapsed, true = open input
+  const [showModules, setShowModules] = useState([]);
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+  const [compactStats, setCompactStats] = useState(false);
+  const colorScheme = useColorScheme();
+  
     // const filteredData = showModules.filter((item) =>
     //   item.title.toLowerCase().includes(searchQuery.toLowerCase())
     // );
@@ -518,13 +540,13 @@ export const TravelPlanningScreen: React.FC = () => {
             showsVerticalScrollIndicator={false}
             stickyHeaderIndices={[0]}
             scrollEventThrottle={16}
-            onScroll={(e) => {
-              const y = e.nativeEvent.contentOffset.y;
-              const shouldCompact = y > 40;
-              if (shouldCompact !== compactStats) {
-                setCompactStats(shouldCompact);
-              }
-            }}
+            // onScroll={(e) => {
+            //   const y = e.nativeEvent.contentOffset.y;
+            //   const shouldCompact = y > 40;
+            //   if (shouldCompact !== compactStats) {
+            //     setCompactStats(shouldCompact);
+            //   }
+            // }}
           >
             <View style={[styles.headerShadowWrap, themeContainerStyle]}>
               
@@ -534,10 +556,10 @@ export const TravelPlanningScreen: React.FC = () => {
                   <Text style={[styles.headerTitle]}>Travel & Plan</Text>
                   {!searchBar && (
                     <TouchableOpacity
-                      // onPress={}
+                      onPress={openSearch}
                       style={styles.searchIconButton}
                     >
-                      <Ionicons name="search" size={21} color="#ffffff" />
+                      <Ionicons name="search" size={21} color="#ffffffff" />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -620,6 +642,8 @@ export const TravelPlanningScreen: React.FC = () => {
             </View> 
             {/* Main content */}
 
+            
+
           <Animated.View
             style={{
             flex: 1,
@@ -667,17 +691,19 @@ interface LeavesViewProps {
     card: any;
   };
 }
-
 const LeavesView: React.FC<LeavesViewProps> = ({ leaves, onSave, theme }) => {
+  const [open, setOpen] = useState(false);
   return (
     <View 
     style={[styles.cardWrapper]}
     >
       <View style={styles.sectionHeaderRow}>
         <Text style={[styles.sectionTitle,theme.text]}>Leave Plan · 2025</Text>
+
         <TouchableOpacity
           style={styles.sectionAction}
-          onPress={onSave}
+          // onPress={onSave}
+          onPress={() => setOpen(true)}
           activeOpacity={0.85}
         >
           <Ionicons name="cloud-upload-outline" size={18} color="#0f172a" />
@@ -721,12 +747,18 @@ const LeavesView: React.FC<LeavesViewProps> = ({ leaves, onSave, theme }) => {
             card: theme.card,
           }} />
         ))}
+        
 
         {/* <TouchableOpacity style={styles.addMoreRow} activeOpacity={0.8}>
           <Ionicons name="add-circle-outline" size={20} color="#38bdf8" />
           <Text style={styles.addMoreText}>Add new leave / WFH</Text>
         </TouchableOpacity> */}
       </ScrollView>
+      <AddLeaveBottomSheet
+              visible={open}
+              onClose={() => setOpen(false)}
+              onSave={(data) => console.log("Leave saved", data)}
+            />
     </View>
   );
 };
@@ -734,6 +766,12 @@ const LeavesView: React.FC<LeavesViewProps> = ({ leaves, onSave, theme }) => {
 const AnimatedLeaveCard: React.FC<{ leave: TravelLeaveEntry ,theme:any }> = ({ leave,theme }) => {
   
   const scale = useRef(new Animated.Value(1)).current;
+
+    // const [showRemindModal, setShowRemindModal] = useState(false);
+    const [daysBefore, setDaysBefore] = useState("");
+    const [remindDate, setRemindDate] = useState<Date | null>(null);
+    const [message, setMessage] = useState("");
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handlePressIn = () => {
     Animated.spring(scale, {
@@ -753,15 +791,16 @@ const AnimatedLeaveCard: React.FC<{ leave: TravelLeaveEntry ,theme:any }> = ({ l
     }).start();
   };
 
-  const statusColor =
-    leave.approvalStatus === "approved"
-      ? "#18ad4fff"
-      : leave.approvalStatus === "rejected"
-      ? "#ef4444"
-      : "#c79707ff";
+  // const statusColor =
+  //   leave.approvalStatus === "approved"
+  //     ? "#18ad4fff"
+  //     : leave.approvalStatus === "rejected"
+  //     ? "#ef4444"
+  //     : "#c79707ff";
       
 
   return (
+    <>
     <Animated.View
       style={[
         styles.leaveCard,
@@ -769,7 +808,9 @@ const AnimatedLeaveCard: React.FC<{ leave: TravelLeaveEntry ,theme:any }> = ({ l
           transform: [{ scale }],
         },
         theme.card,
-       { borderWidth: 0.8, borderColor: statusColor}
+       { borderWidth: 1
+        , borderColor: "#575757ff"
+      }
       ]}
     >
       <TouchableOpacity
@@ -779,51 +820,51 @@ const AnimatedLeaveCard: React.FC<{ leave: TravelLeaveEntry ,theme:any }> = ({ l
       >
         <View style={[styles.leaveRowTop]}>
           <View>
-            <Text style={[styles.leaveDateText,theme.text]}>{leave.leaveDate}</Text>
-            {leave.reason ? (
+            {leave.reason ? (<Text style={[styles.leaveDateText,theme.text]}>{leave.reason}</Text>) : null}
               <Text style={styles.leaveReasonText} numberOfLines={1}>
-                {leave.reason}
+                {leave.leaveDate}
               </Text>
-            ) : null}
+            
           </View>
           <View style={{ alignItems: "flex-start" ,flexDirection:"row",gap:8 }}>
             <View style={[styles.leaveTypePill1,{flexDirection:"row",alignItems:"center"}]}>
               <Text style={styles.leaveTypePillText}>{leave.leaveType}</Text>
             </View>
-           {leave.partOfDay!="full"&&<View style={[styles.leaveTypePill2,{flexDirection:"row",alignItems:"center" }]}>
+           {/* {leave.partOfDay!="full"&&<View style={[styles.leaveTypePill2,{flexDirection:"row",alignItems:"center" }]}>
               <Text style={[styles.leavePartOfDayText]}>{leave.partOfDay}</Text>
-            </View>}
+            </View>} */}
           </View>
         </View>
         <View style={styles.leaveRowBottom}>
           <View style={styles.statusDotWrapper}>
-            <View
+            {/* <View
               style={[
                 styles.statusDot,
-                {
-                  backgroundColor: statusColor,
-                },
               ]}
-            />
-            <Text style={styles.statusText}>{leave.approvalStatus
+            /> */}
+            <Text style={styles.statusText}>{leave.remainder_msg
               }</Text>
           </View>
-          {leave.remindAt && (
-            <View style={styles.remindChip}>
+          {/* {leave.remindAt && (leave.approvalStatus === "pending" || leave.approvalStatus === "rejected") && ( */}
+            <TouchableOpacity style={[styles.remindChip,{ backgroundColor: leave.notify ? "#ba3d3dff" : "white" }]} onPress={() => {}}>
               <Ionicons
-                name="notifications-outline"
-                size={14}
-                color="#0f172a"
-                style={{ marginRight: 4 }}
+                name="notifications-off-outline"
+                size={18}
+                color="#222d46ff"
+                // style={{ fontWeight: "heavy"}}
               />
-              <Text style={styles.remindChipText}>Remind</Text>
-            </View>
-          )}
+              {/* <Text style={styles.remindChipText}>mute</Text> */}
+            </TouchableOpacity>
+          {/* )} */}
         </View>
       </TouchableOpacity>
     </Animated.View>
+    </>
+    
   );
 };
+
+
 
 // ---------- Trips View ----------
 
@@ -1198,8 +1239,8 @@ tabLabel: {
     backgroundColor: "#e0f2fe",
   },
   sectionActionText: {
-    fontSize: 11,
-    marginLeft: 4,
+    fontSize: 10,
+    marginLeft: 5,
     color: "#0f172a",
     fontWeight: "500",
   },
@@ -1236,16 +1277,16 @@ tabLabel: {
   leaveRowTop: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
+    marginBottom: 5,
   },
   leaveDateText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#e5e7eb",
+    // color: "#e5e7eb",
   },
   leaveReasonText: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: "#7e8590ff",
     marginTop: 2,
     maxWidth: 200,
   },
@@ -1300,10 +1341,11 @@ tabLabel: {
     paddingHorizontal: 10,
     paddingVertical: 3,
     backgroundColor: "#e0f2fe",
+    fontWeight: "bold",
+    color: "#ffffffff",
   },
   remindChipText: {
     fontSize: 11,
-    color: "#0f172a",
     fontWeight: "500",
   },
   addMoreRow: {
@@ -1804,6 +1846,65 @@ tabLabel: {
     fontSize: 12,
     color: "#9cafa1ff",
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0, 0, 0, 0.53)",
+  justifyContent: "flex-end",
+},
+modalCard: {
+  backgroundColor: "#fff",
+  padding: 16,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+},
+modalTitle: {
+  fontSize: 18,
+  fontWeight: "600",
+  marginBottom: 12,
+},
+label: {
+  fontSize: 13,
+  color: "#475569",
+  marginTop: 10,
+},
+input: {
+  borderWidth: 1,
+  borderColor: "#e2e8f0",
+  borderRadius: 8,
+  padding: 10,
+  marginTop: 6,
+},
+dateBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  padding: 12,
+  borderWidth: 1,
+  borderColor: "#e2e8f0",
+  borderRadius: 8,
+  marginTop: 6,
+},
+actionsRow: {
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  marginTop: 16,
+},
+cancel: {
+  color: "#64748b",
+  marginRight: 16,
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+},
+saveBtn: {
+  backgroundColor: "#471d63ff",
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  borderRadius: 8,
+},
+saveText: {
+  color: "#fff",
+  fontWeight: "500",
+},
+
 
 
 

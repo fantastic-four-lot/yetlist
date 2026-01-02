@@ -80,19 +80,34 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
+import { useAuth } from '../lib/auth/AuthContext';
 
 export default function RegisterScreen({ navigation }: any) {
   const [fullName, setFullName] = useState('');
   const [email, setEmail]     = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
+  const [err, setErr] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const { register } = useAuth();
   const colorScheme= useColorScheme();
    const insets = useSafeAreaInsets();
 
-  const onRegister = () => {
+  const onRegister = async () => {
     // TODO: add your register logic here
-    console.log({ fullName, email, password, confirm });
+    // console.log({ email, password });
+setErr(null);
+    setLoading(true);
+    try {
+      await register(email.trim(), password, fullName);
+    } catch (e: any) {
+      setErr(e.message ?? 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+    // console.log({ fullName, email, password, confirm });
   };
+
 
   const goToSignIn = () => {
     // If you have a SignIn screen wired in your navigator:
