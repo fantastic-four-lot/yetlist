@@ -33,6 +33,20 @@ export class AuthController {
     }
 
 
+   @Get('me')
+    @UseGuards(JwtAuthGuard)
+   async tokenValidation(@Req() req: any) {
+       const userdetails = await this.authService.getUserbyEmail(req.user.email);
+       console.log('Token validation request received',userdetails);
+
+
+       // Assuming req.user is populated by JwtAuthGuard
+       return userdetails;
+   }
+
+
+
+
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     getProfile(@Req() req: any) {

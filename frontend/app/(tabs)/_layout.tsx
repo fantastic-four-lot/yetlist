@@ -3,9 +3,17 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform,Image } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform,Image, Button } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../lib/auth/AuthContext';
+// import { StatusBar } from 'expo-status-bar';
+
+// import { ThemedView } from '@/components/themed-view';
+
+
+// const TAB_CONTAINER_MARGIN_HORIZONTAL = 15;
+// const TAB_CONTAINER_BASE_BOTTOM = 16; // base spacing above safe area
 
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
 const insets = useSafeAreaInsets();
@@ -79,14 +87,19 @@ const bottomOffset = (insets.bottom || 0)
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+   const { logout } = useAuth();
 
   return (
+
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         animation: 'shift',
+         headerRight: () => <Button title="Logout" onPress={logout}  />
       }}
+
+     
     >
       <Tabs.Screen
         name="index"
