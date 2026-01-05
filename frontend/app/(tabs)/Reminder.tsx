@@ -127,14 +127,6 @@ const SUBTITLES = [
   "🧠 Your second brain for daily priorities",
 ];
 
-
-// if (
-//   Platform.OS === "android" &&
-//   UIManager.setLayoutAnimationEnabledExperimental
-// ) {
-//   UIManager.setLayoutAnimationEnabledExperimental(true);
-// }
-
 const RemindersTab: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchBar, setSearchBar] = useState(false); // false = collapsed, true = open input
