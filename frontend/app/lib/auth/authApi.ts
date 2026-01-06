@@ -68,7 +68,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
       throw new ApiError(message, { status: res.status, details: data });
     }
 
-    // console.log('API Response:', data);
+    console.log('API Response:', data);
     return data as T;
   } catch (err: any) {
     // Network errors, parsing errors, etc.

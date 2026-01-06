@@ -135,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const { access_token, user } = await loginApi({ email, password });
-    // console.log('Login successful, saving token:', access_token);
+    console.log('Login successful, saving token:', access_token);
     await saveToken(access_token);
     setUser(user);
     router.replace('/'); // Navigate to home
