@@ -8,10 +8,7 @@ import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../lib/auth/AuthContext';
 // import { StatusBar } from 'expo-status-bar';
-
 // import { ThemedView } from '@/components/themed-view';
-
-
 // const TAB_CONTAINER_MARGIN_HORIZONTAL = 15;
 // const TAB_CONTAINER_BASE_BOTTOM = 16; // base spacing above safe area
 
