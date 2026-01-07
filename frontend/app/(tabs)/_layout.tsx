@@ -129,6 +129,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={25} name="cake" color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <IconSymbol size={25}   name="person-outline" color={color} />,
+        }}
+      />
     </Tabs>
   );
 }

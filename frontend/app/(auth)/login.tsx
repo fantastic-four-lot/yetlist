@@ -80,6 +80,7 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Keyboard,
+  Image,
 } from 'react-native';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import { useAuth } from '../lib/auth/AuthContext';
@@ -158,26 +159,11 @@ return (
 
                 {/* Illustration */}
                 <View style={styles.illustrationWrapper}>
-                  <Svg width={180} height={150}>
-                    {/* Phone body */}
-                    <Rect x={84} y={12} width={70} height={110} rx={12} ry={12} fill="#FFFFFF" stroke="#2F2F2F" strokeWidth={2} />
-                    {/* Phone details */}
-                    <Rect x={92} y={24} width={54} height={6} rx={3} fill="#DCDCDC" />
-                    <Rect x={92} y={36} width={54} height={6} rx={3} fill="#DCDCDC" />
-                    <Rect x={92} y={48} width={54} height={6} rx={3} fill="#DCDCDC" />
-                    <Circle cx={119} cy={88} r={16} fill={PURPLE} />
-
-                    {/* Person */}
-                    <Circle cx={36} cy={40} r={10} fill="#2F2F2F" />
-                    <Rect x={27} y={52} width={18} height={40} rx={6} fill={PURPLE} />
-                    <Rect x={18} y={58} width={10} height={6} rx={3} fill={PURPLE} />
-                    <Rect x={45} y={58} width={10} height={6} rx={3} fill={PURPLE} />
-                    <Rect x={28} y={92} width={6} height={26} rx={3} fill="#2F2F2F" />
-                    <Rect x={37} y={92} width={6} height={26} rx={3} fill="#2F2F2F" />
-                    <Path d="M28 118 h8 v4 h-10 z" fill="#E25B5B" />
-                    <Path d="M37 118 h8 v4 h-10 z" fill="#E25B5B" />
-                    <Rect x={20} y={128} width={140} height={3} rx={1.5} fill="#EAEAEA" />
-                  </Svg>
+                   <Image
+    source={require('../../assets/images/login-page-img.png')}
+    style={styles.illustration}
+    resizeMode="contain"
+  />
                 </View>
 
                 {!!err && <Text style={styles.error}>{err}</Text>}
@@ -270,6 +256,11 @@ const styles = StyleSheet.create({
   illustrationWrapper: {
     alignItems: 'center',
     marginBottom: 16,
+  },
+  illustration: {
+    margin: 10,
+    width: 150,
+    height: 150,
   },
   inputs: {
     gap: 14,
