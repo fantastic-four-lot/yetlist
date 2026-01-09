@@ -91,7 +91,7 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         animation: 'shift',
          headerRight: () => <Button title="Logout" onPress={logout}  />
       }}

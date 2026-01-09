@@ -111,7 +111,7 @@ export default function SignInScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-    // console.log({ email, password });
+    console.log({ email, password });
   };
 
   const goToRegister = () => {

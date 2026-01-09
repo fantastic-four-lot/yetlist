@@ -3,7 +3,8 @@
 // A lightweight API client for login/register using fetch.
 // Adjust BASE_URL and endpoints to match your backend.
 
-export const BASE_URL = 'http://192.168.200.182:3000'
+export const BASE_URL = 'http://172.20.1.104:3000'
+// export const BASE_URL = 'http://192.168.200.182:3000'
 // export const BASE_URL = "http://localhost:3000";?
 
 
