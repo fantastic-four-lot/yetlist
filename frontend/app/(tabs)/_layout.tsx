@@ -8,10 +8,7 @@ import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../lib/auth/AuthContext';
 // import { StatusBar } from 'expo-status-bar';
-
 // import { ThemedView } from '@/components/themed-view';
-
-
 // const TAB_CONTAINER_MARGIN_HORIZONTAL = 15;
 // const TAB_CONTAINER_BASE_BOTTOM = 16; // base spacing above safe area
 
@@ -86,7 +83,7 @@ const bottomOffset = (insets.bottom || 0)
 };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
    const { logout } = useAuth();
 
   return (
@@ -96,8 +93,8 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         animation: 'shift',
-        //  headerRight: () => <Button title="Logout" onPress={logout}  
-        //  />
+         headerRight: () => <Button title="Logout" onPress={logout}  
+         />
       }}
     >
       <Tabs.Screen

@@ -2,7 +2,7 @@ import { Text, StyleSheet, View,  useColorScheme  } from 'react-native';
 
 
 
-export default function ThemeColors() {
+export function useThemeColors() {
   const colorScheme = useColorScheme();
 
   const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;

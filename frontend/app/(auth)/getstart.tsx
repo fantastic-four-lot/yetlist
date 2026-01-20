@@ -9,6 +9,7 @@ import {
   Platform,
   StatusBar,
   Image,
+  useColorScheme,
 } from 'react-native';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,18 +20,19 @@ const PURPLE = '#5B4B8A';
 const TEXT_DARK = '#1E1E1E';
 
 export default function OnboardingScreen({ navigation }: any) {
-  const colorScheme= useColorScheme();
+
+    const colorScheme= useColorScheme();
   const onGetStarted = async () => {
     try {
       await AsyncStorage.setItem('@has_seen_onboarding', 'true');
+      router.replace('/(auth)/login') // or 'Register'
     } catch (e) {
       // ignore and continue
     }
-    router.replace('/(auth)/login') // or 'Register'
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
       <View style={styles.container}>
         {/* Top decorative overlapping circles */}
         <View style={styles.topBlobWrapper}>
@@ -52,7 +54,7 @@ export default function OnboardingScreen({ navigation }: any) {
 
           {/* Text block */}
           <Text style={[styles.header,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>A Smarter Way to Remember</Text>
-          <Text style={styles.desc}>
+          <Text style={[  styles.desc,{color: colorScheme == "light" ? '#6B6B6B' : '#CCCCCC'}]}>
             Whether it’s drinking water, paying bills, booking tickets, or taking medicines — your reminder
             buddy keeps track of it all.{'\n'}Relax… we’ll remind you at the right time.
           </Text>
@@ -63,17 +65,20 @@ export default function OnboardingScreen({ navigation }: any) {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    // backgroundColor: '#8a7878ff',
+    // backgroundColor: '#FFFFFF',
+    // backgroundColor: 'red',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
-  container: { flex: 1 },
+  container: { flex: 1
+    
+   },
   topBlobWrapper: {
     position: 'absolute',
     top: 0, left: 0, right: 0,

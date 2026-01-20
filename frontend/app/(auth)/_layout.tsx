@@ -1,7 +1,7 @@
 
 // app/(auth)/_layout.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
@@ -13,11 +13,14 @@ export default function AuthLayout() {
   useEffect(() => {
     const checkFirstOpen = async () => {
       try {
+        // const seen = await AsyncStorage.getItem('@has_seen_onboarding');
         const seen = await AsyncStorage.getItem('@has_seen_onboarding');
-        setInitialRoute(seen === 'true' ? 'SignIn' : 'Onboarding');
+         console.log(seen)
+        setInitialRoute(seen === 'true' ? 'login' : 'Onboarding');
       } catch {
         setInitialRoute('Onboarding');
       }
+      // router.push(`/login`)
     };
     checkFirstOpen();
   }, []);
@@ -35,8 +38,9 @@ export default function AuthLayout() {
   return (
     <Stack screenOptions={{ headerShown:false }}
     >
-      <Stack.Screen name="getstart" options={{ title: 'Onboarding' }} />
-      <Stack.Screen name="login" options={{ title: 'Login' }} />
+      
+      {initialRoute==='Onboarding' ?(<Stack.Screen name="getstart" options={{ title: 'Onboarding' }} />):
+      (<Stack.Screen name="login" options={{ title: 'Login' }} />)}
       <Stack.Screen name="register" options={{ title: 'Register' }} />
     </Stack>
   );
