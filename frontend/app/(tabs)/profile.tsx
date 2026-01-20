@@ -21,7 +21,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import { useAuth } from '../lib/auth/AuthContext';
 import { StatusBar } from 'expo-status-bar';
-import ThemeColors from '@/components/themed-view';
+import { useThemeColors } from '@/components/themed-view';
+import { router } from 'expo-router';
 
 type ListItemProps = {
   icon: React.ReactNode;
@@ -62,11 +63,11 @@ const ListItem: React.FC<ListItemProps> = ({ icon, title, subtitle, right, dange
 
 export default function ProfileScreen({ navigation }: any) {
   const [faceIdEnabled, setFaceIdEnabled] = useState(false);
-  const { themeContainerStyle, themeTextStyle, themeCardStyle } = ThemeColors();
+  const { themeContainerStyle, themeTextStyle, themeCardStyle } = useThemeColors();
 
-  const colorScheme= useColorScheme();
-  const { logout } = useAuth();
-
+  // const colorScheme= useColorScheme();
+  const { user,logout } = useAuth();
+//  console.log('User in ProfileScreen:', user);
   const onEditProfile = () => {
     // navigate to edit profile screen
     navigation?.navigate?.('EditProfile');
@@ -94,7 +95,9 @@ export default function ProfileScreen({ navigation }: any) {
   return (
 <>
   <StatusBar style={"light"} translucent />    
-        <View style={[styles.overlay, themeContainerStyle]}>
+        <View style={[styles.overlay, 
+          themeContainerStyle
+          ]}>
           <View style={[{ height: "91%" }]}>
             <ScrollView
               contentContainerStyle={[
@@ -105,41 +108,46 @@ export default function ProfileScreen({ navigation }: any) {
               stickyHeaderIndices={[0]}
               scrollEventThrottle={16}
             >
-              <View style={[styles.headerShadowWrap, themeContainerStyle]}>
-                          <View style={[styles.header, { minWidth: widthW }]}>
-                            {/* Top row: title + search icon (when closed) */}
-                            <View style={styles.headerTopRow}>
-                              <Text style={[styles.headerTitle]}>Profile</Text>
-                              
-                                <TouchableOpacity
-                                  // onPress={openSearch}
-                                  // style={styles.searchIconButton}
-                                >
-                                  {/* <Ionicons name="search" size={21} color="#ffffff" /> */}
-                                </TouchableOpacity>
-                              
-                            </View>
-                            <View style={styles.avatarRow}>
-                            <Image source={{ uri: 'https://i.pravatar.cc/100?img=15' }} style={styles.avatar} />
-                            <View style={{ flex: 1 }}>
-                              <Text style={styles.name}>Itunuoluwa Abidoye</Text>
-                              <Text style={styles.handle}>@Itunuoluwa</Text>
-                            </View>
-                            <TouchableOpacity onPress={onEditProfile} style={styles.editBtn} activeOpacity={0.8}>
-                              <Feather name="edit-2" size={18} color={WHITE} />
-                            </TouchableOpacity>
-                          </View>
-                          </View>
+              <View style={[styles.headerShadowWrap, 
+                themeContainerStyle
+                ]}>
+                <View style={[styles.header, { minWidth: widthW }]}>
+                  {/* Top row: title + search icon (when closed) */}
+                  <View style={styles.headerTopRow}>
+                    <Text style={[styles.headerTitle]}>Profile</Text>
+                    
+                      <TouchableOpacity
+                        // onPress={openSearch}
+                        // style={styles.searchIconButton}
+                      >
+                        {/* <Ionicons name="search" size={21} color="#ffffff" /> */}
+                      </TouchableOpacity>
+                    
+                  </View>
+                  <View style={styles.avatarRow}>
+                  <Image source={{ uri: 'https://i.pravatar.cc/100?img=15' }} style={styles.avatar} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.name}>{user?.name}</Text>
+                    <Text style={styles.handle}>{user?.email}</Text>
+                  </View>
+                  <TouchableOpacity onPress={onEditProfile} style={styles.editBtn} activeOpacity={0.8}>
+                    <Feather name="edit-2" size={12} color={WHITE}  />
+                  </TouchableOpacity>
+                </View>
+                </View>
               </View>
               <View style={styles.container}>
 
                 {/* Main Settings Card */}
-                <View style={[styles.card, themeCardStyle]}>
+                <View style={[styles.card, 
+                  themeCardStyle
+                  ]}>
                   <ListItem
                     icon={<Ionicons name="person-circle-outline" size={20} color={PURPLE} />}
                     title="My Account"
                     subtitle="Make changes to your account"
-                    onPress={() => navigation?.navigate?.('MyAccount')}
+                    onPress={() => router.push('/profile/myAccount')}
+                    // onPress={() => router.replace('./../components/myAccount')}
                   
                   />
 
@@ -189,9 +197,13 @@ export default function ProfileScreen({ navigation }: any) {
                 </View>
 
                 {/* More Section */}
-                <Text style={[styles.sectionLabel,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>More</Text>
+                <Text style={[styles.sectionLabel,
+                  themeTextStyle
+                  ]}>More</Text>
 
-                <View style={[styles.card, themeCardStyle]}>
+                <View style={[styles.card, 
+                  themeCardStyle
+                  ]}>
                   <ListItem
                     icon={<Ionicons name="help-circle-outline" size={20} color={PURPLE} />}
                     title="Help & Support"
@@ -203,7 +215,7 @@ export default function ProfileScreen({ navigation }: any) {
                   <ListItem
                     icon={<Ionicons name="information-circle-outline" size={20} color={PURPLE} />}
                     title="About App"
-                    onPress={logout}
+                    // onPress={logout}
                   />
                 </View>
               </View>
@@ -252,17 +264,18 @@ const styles = StyleSheet.create({
   },
   avatarRow: { flexDirection: 'row', alignItems: 'center' },
   avatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    marginRight: 12,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    marginRight: 17,
+    marginLeft: 7,
     borderWidth: 2,
     borderColor: WHITE,
     backgroundColor: '#EDEDED',
   },
   name: {
     color: WHITE,
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '700',
   },
   handle: {
@@ -272,10 +285,13 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: '#483A77',
-    width: 36, height: 36,
+    width: 25, height: 25,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    left: 55,
+    top: 45, 
   },
 
   card: {
@@ -284,9 +300,13 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderWidth: 1,
+    borderWidth: 0,
     // borderColor: BORDER,
     marginBottom: 18,
+    shadowColor: "rgba(30, 2, 57, 1)",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 10,
   },
   divider: {
     height: 1,

@@ -83,7 +83,7 @@ const bottomOffset = (insets.bottom || 0)
 };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
    const { logout } = useAuth();
 
   return (
@@ -93,10 +93,10 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         animation: 'shift',
-         headerRight: () => <Button title="Logout" onPress={logout}  />
+         headerRight: () => <Button title="Logout" onPress={logout}  
+         />
       }}
 
-     
     >
       <Tabs.Screen
         name="index"

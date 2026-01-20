@@ -84,7 +84,7 @@ import {
 } from 'react-native';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import { useAuth } from '../lib/auth/AuthContext';
-import ThemeColors from '@/components/themed-view';
+import { useThemeColors } from '@/components/themed-view';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -96,7 +96,7 @@ export default function SignInScreen({ navigation }: any) {
   const { login } = useAuth();
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const { themeContainerStyle, themeTextStyle, themeCardStyle } =ThemeColors();
+  const { themeContainerStyle, themeTextStyle, themeCardStyle } = useThemeColors();
   const colorScheme= useColorScheme();
   const insets = useSafeAreaInsets();
 

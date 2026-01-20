@@ -24,10 +24,10 @@ export default function OnboardingScreen({ navigation }: any) {
   const onGetStarted = async () => {
     try {
       await AsyncStorage.setItem('@has_seen_onboarding', 'true');
+      router.replace('/(auth)/login') // or 'Register'
     } catch (e) {
       // ignore and continue
     }
-    router.replace('/(auth)/login') // or 'Register'
   };
 
   return (

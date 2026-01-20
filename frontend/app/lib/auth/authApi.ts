@@ -66,6 +66,10 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
       const message =
         (isJson && (data?.message || data?.error || data?.errors?.[0])) ||
         `Request failed with status ${res.status}`;
+
+        
+
+        console.log('API Request error:', { status: data });
       throw new ApiError(message, { status: res.status, details: data });
     }
 
@@ -74,6 +78,7 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
   } catch (err: any) {
     // Network errors, parsing errors, etc.
     // console.error('API Request error:', err);
+    
     if (err instanceof ApiError) throw err;
     throw new ApiError(err?.message ?? 'Network error', { details: err });
   }

@@ -1,4 +1,4 @@
-import ThemeColors from "@/components/themed-view";
+import { useThemeColors } from '@/components/themed-view';
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -204,7 +204,7 @@ const RemindersTab: React.FC = () => {
     return () => clearInterval(id);
   }, [subtitleOpacity, subtitleTranslateY]);
 
-  const { themeContainerStyle, themeTextStyle, themeCardStyle } = ThemeColors();
+  const { themeContainerStyle, themeTextStyle, themeCardStyle } = useThemeColors();
 
   const renderPriorityBadge = (priority: string) => {
     if (priority === "high") {

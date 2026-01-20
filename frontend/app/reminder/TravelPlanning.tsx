@@ -12,7 +12,7 @@ import {
   Modal,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import ThemeColors from "@/components/themed-view";
+import { useThemeColors } from '@/components/themed-view';
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -322,7 +322,7 @@ export const TravelPlanningScreen: React.FC = () => {
     //   item.title.toLowerCase().includes(searchQuery.toLowerCase())
     // );
      const { themeContainerStyle, themeTextStyle, themeCardStyle } =
-    ThemeColors();
+    useThemeColors();
   
     // --- Animated subtitle ---
     const subtitleOpacity = useRef(new Animated.Value(1)).current;
