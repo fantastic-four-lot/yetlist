@@ -49,22 +49,22 @@ function RootRouter() {
     );
   }
 
-  // console.log('Auth state:', { user });
+  console.log('Auth state:', { user });
 
   return (
      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    <Stack screenOptions={{ headerShown: false }}>
-      {user ? (
-        // Logged in -> go to tabs/app
-        <Stack.Screen name="(tabs)" />
-        
-      ) : (
-        // Not logged in -> show auth stack
-        <Stack.Screen name="(auth)" />
-      )}
-      <Stack.Screen name="reminder" options={{ headerShown: false }} />    
-    </Stack>
-    </ThemeProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          {user ? (
+            // Logged in -> go to tabs/app
+            <Stack.Screen name="(tabs)" />
+            
+          ) : (
+            // Not logged in -> show auth stack
+            <Stack.Screen name="(auth)" />
+          )}
+          <Stack.Screen name="reminder" options={{ headerShown: false }} />    
+        </Stack>
+      </ThemeProvider>
   );
 }
 

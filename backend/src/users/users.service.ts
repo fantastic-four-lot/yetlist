@@ -8,6 +8,9 @@ import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UsersService {
+  // update(userId: string, arg1: { refresh_token: any; }) {
+  //   throw new Error('Method not implemented.');
+  // }
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: MongoRepository<User>,
@@ -42,4 +45,5 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
 }

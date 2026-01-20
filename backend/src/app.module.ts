@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
+import { RefreshToken } from './refresh-token/refresh-token.entity';
 
 
 @Module({
@@ -23,11 +24,12 @@ useUnifiedTopology: true,
 database: undefined, // if using database in URI, leave undefined
 synchronize: true, // set to false for production
 logging: true,
-entities: [User],
+entities: [User, RefreshToken],
 }),
 }),
 UsersModule,
 AuthModule,
+RefreshToken,
 ],
 })
 export class AppModule {}

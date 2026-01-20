@@ -9,23 +9,21 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
+import { RefreshTokenModule } from 'src/refresh-token/refresh-token.module';
 
 
 @Module({
-imports: [
-ConfigModule,
-PassportModule,
-JwtModule.registerAsync({
-imports: [ConfigModule],
-inject: [ConfigService],
-useFactory: (cfg: ConfigService) => ({
-secret: cfg.get<string>('JWT_SECRET', 'CHANGE_THIS_SECRET'),
-signOptions: { expiresIn: cfg.get<string>('JWT_EXPIRES_IN', '3600s') },
-}),
-}),
-UsersModule,
-],
-providers: [AuthService, JwtStrategy],
-controllers: [AuthController],
+  imports: [
+    ConfigModule,
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_ACCESS_SECRET,
+      signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN },
+    }),    // JwtModule.register({}),   
+    UsersModule,
+    RefreshTokenModule, 
+  ],
+  providers: [AuthService, JwtStrategy],
+  controllers: [AuthController],
 })
 export class AuthModule {}

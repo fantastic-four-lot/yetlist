@@ -94,12 +94,11 @@ export default function TabLayout() {
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         animation: 'shift',
-         headerRight: () => <Button title="Logout" onPress={logout}  />
+        //  headerRight: () => <Button title="Logout" onPress={logout}  
+        //  />
       }}
-
-     
     >
       <Tabs.Screen
         name="index"
@@ -171,7 +170,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     letterSpacing: 0.5,
   },
 });

@@ -92,6 +92,8 @@ import React, { createContext, use, useContext, useEffect, useState } from 'reac
 import { loginApi, registerApi, meApi, AuthResponse } from './authApi';
 import { getToken, saveToken, clearToken } from './storage';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage/lib/typescript/AsyncStorage';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 type User = AuthResponse['user'] | null;
 
@@ -101,6 +103,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
+  checkExistingSession: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -109,16 +112,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkExistingSession = async () => {
+    console.log('Checking existing session');
+    const token = getToken();
+
+    if (token) {
+      try {
+        setUser(await meApi(token));
+        // await saveToken(String(token));
+        router.replace('/'); // skip login
+        
+      } catch (err) {
+        // token expired → try efresh OR just clear & stay on login
+        // await AsyncStorage.removeItem('accessToken');
+        setUser(null);
+        await clearToken();
+        router.replace('/(auth)/login');
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   setLoading(false);
+  // }, [user]);
+
   // On app load, check saved token and fetch user
   useEffect(() => {
     (async () => {
       try {
-        const token = await getToken();
+        const token =  getToken();
         if (token) {
+          console.log('Found saved token, fetching user info'+token); 
           // const { id,email,name } = await meApi(token);
           setUser(await meApi(token));
-      
-          
         } else {
           setUser(null);
         }
@@ -133,19 +159,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
 
-  const login = async (email: string, password: string) => {
-    const { access_token, user } = await loginApi({ email, password });
-    console.log('Login successful, saving token:', access_token);
-    await saveToken(access_token);
-    setUser(user);
-    router.replace('/'); // Navigate to home
-  };
+  // const login = async (email: string, password: string) => {
+  //   const { accessToken, user } = await loginApi({ email, password });
+  //   console.log('Login successful');
+    // await saveToken(accessToken);
+  //   console.log('token saved');
+  //   setUser(user);
+  //   router.replace('/'); // Navigate to home
+  // };
+    const login = async (email: string, password: string) => {
+      const { accessToken, user } = await loginApi({ email, password });
+      await saveToken(accessToken);
+      // (Optional) only if you’re also sending refresh token to frontend:
+      // await AsyncStorage.setItem('refreshToken', refreshToken);
+        setUser(user);
+        router.replace('/'); 
+    };
 
   const register = async (email: string, password: string, name?: string) => {
-    const { access_token, user } = await registerApi({ email, password, name });
-    // await saveToken(access_token);
-    // setUser(user);
-    router.replace('/(auth)/login');
+    const response = await registerApi({ email, password, name });
+    if(response) {
+      router.replace('/(auth)/login');
+    }
+
   };
 
   const logout = async () => {
@@ -155,7 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout ,checkExistingSession}}>
       {children}
     </AuthContext.Provider>
   );

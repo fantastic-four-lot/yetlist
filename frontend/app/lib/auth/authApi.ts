@@ -3,8 +3,9 @@
 // A lightweight API client for login/register using fetch.
 // Adjust BASE_URL and endpoints to match your backend.
 
-export const BASE_URL = 'http://192.168.200.182:3000'
-// export const BASE_URL = "http://localhost:3000";?
+// export const BASE_URL = 'http://192.168.200.182:3000'
+export const BASE_URL = 'http://172.20.1.115:3000'
+// export const BASE_URL = "http://localhost:3000"
 
 
 export type LoginInput = {
@@ -19,7 +20,7 @@ export type RegisterInput = {
 };
 
 export type AuthResponse = {
-  access_token: string; // JWT or session token
+  accessToken: string;
   user: {
     id: string;
     email: string;
@@ -108,7 +109,7 @@ export async function registerApi(input: RegisterInput): Promise<AuthResponse> {
  * Optional: Get current user by token
  * GET /auth/me  with Authorization: Bearer <token>
  */
-export async function meApi(token: string): Promise<AuthResponse['user']> {
+export async function meApi(token: Promise<string>): Promise<AuthResponse['user']> {
   return request<AuthResponse['user']>('/auth/me', {
     method: 'GET',
     headers: {

@@ -1268,7 +1268,7 @@ tabLabel: {
   },
   leaveCard: {
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 10,
     borderColor: "#1f2937",
     padding: 12,
     marginBottom: 12,

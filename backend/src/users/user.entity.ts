@@ -15,5 +15,4 @@ export class User {
   @Column()
   name: string;
 
-  // optional: timestamps, roles, etc.
 }

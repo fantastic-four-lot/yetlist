@@ -1,71 +1,4 @@
-
-// // app/(auth)/login.tsx
-// import React, { useState } from 'react';
-// import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-// import { Link } from 'expo-router';
-// import { useAuth } from './../lib/auth/AuthContext';
-
-// export default function Login() {
-//   const { login } = useAuth();
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [err, setErr] = useState<string | null>(null);
-//   const [loading, setLoading] = useState(false);
-
-//   const onSubmit = async () => {
-//     setErr(null);
-//     setLoading(true);
-//     try {
-//       await login(email.trim(), password);
-//     } catch (e: any) {
-//       setErr(e.message ?? 'Login failed');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>Welcome back</Text>
-//       {!!err && <Text style={styles.error}>{err}</Text>}
-//       <TextInput
-//         placeholder="Email"
-//         autoCapitalize="none"
-//         keyboardType="email-address"
-//         value={email}
-//         onChangeText={setEmail}
-//         style={styles.input}
-//       />
-//       <TextInput
-//         placeholder="Password"
-//         secureTextEntry
-//         value={password}
-//         onChangeText={setPassword}
-//         style={styles.input}
-//       />
-//       <Button title={loading ? 'Signing in...' : 'Login'} onPress={onSubmit} disabled={loading} />
-//       <View style={{ height: 16 }} />
-//       <Link href="/(auth)/register">Create an account</Link>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 20, justifyContent: 'center' },
-//   title: { fontSize: 24, fontWeight: '600', marginBottom: 16 },
-//   input: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, padding: 12, marginBottom: 12 },
-//   error: { color: 'red', marginBottom: 12 }
-// });
-
-
-
-
-
-
-
-
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   View,
@@ -87,18 +20,26 @@ import { useAuth } from '../lib/auth/AuthContext';
 import ThemeColors from '@/components/themed-view';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage/lib/typescript/AsyncStorage';
 
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { login } = useAuth();
+  const { login, checkExistingSession } = useAuth();
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { themeContainerStyle, themeTextStyle, themeCardStyle } =ThemeColors();
   const colorScheme= useColorScheme();
   const insets = useSafeAreaInsets();
+
+  // useEffect(() => {
+  //   checkExistingSession();
+  // }, []);
+
+  
+  
 
   const onLogin = async () => {
     // TODO: your login logic (API call, validation, etc.)
@@ -111,7 +52,7 @@ export default function SignInScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-    // console.log({ email, password });
+    console.log({ email, password });
   };
 
   const goToRegister = () => {
@@ -160,10 +101,10 @@ return (
                 {/* Illustration */}
                 <View style={styles.illustrationWrapper}>
                    <Image
-    source={require('../../assets/images/login-page-img.png')}
-    style={styles.illustration}
-    resizeMode="contain"
-  />
+                    source={require('../../assets/images/login-page-img.png')}
+                    style={styles.illustration}
+                    resizeMode="contain"
+                  />
                 </View>
 
                 {!!err && <Text style={styles.error}>{err}</Text>}
@@ -307,3 +248,5 @@ const styles = StyleSheet.create({
   },
    error: { color: 'red', marginBottom: 12 }
 });
+
+

@@ -44,6 +44,17 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    
+
+"runtimeVersion": "1.0.0", // or { "policy": "sdkVersion" }
+    "updates": {
+      "url": "exp://127.0.0.1:8081",
+      "checkAutomatically": "ON_LOAD",
+      "enabled": true
     }
+
+
+    
   }
 }

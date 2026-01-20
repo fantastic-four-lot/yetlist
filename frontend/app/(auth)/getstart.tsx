@@ -13,11 +13,13 @@ import {
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { useColorScheme } from 'react-native';
 
 const PURPLE = '#5B4B8A';
 const TEXT_DARK = '#1E1E1E';
 
 export default function OnboardingScreen({ navigation }: any) {
+  const colorScheme= useColorScheme();
   const onGetStarted = async () => {
     try {
       await AsyncStorage.setItem('@has_seen_onboarding', 'true');
@@ -49,7 +51,7 @@ export default function OnboardingScreen({ navigation }: any) {
           </View>
 
           {/* Text block */}
-          <Text style={styles.header}>A Smarter Way to Remember</Text>
+          <Text style={[styles.header,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>A Smarter Way to Remember</Text>
           <Text style={styles.desc}>
             Whether it’s drinking water, paying bills, booking tickets, or taking medicines — your reminder
             buddy keeps track of it all.{'\n'}Relax… we’ll remind you at the right time.
@@ -68,7 +70,7 @@ export default function OnboardingScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    // backgroundColor: '#8a7878ff',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: { flex: 1 },
@@ -93,8 +95,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     fontWeight: '800',
-    color: TEXT_DARK,
-    marginBottom: 20,
+    // color: TEXT_DARK,
+    marginBottom: 15,
   },
   desc: {
     color: '#6B6B6B',
@@ -106,6 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     paddingVertical: 16,
     alignItems: 'center',
+    marginTop:0
   },
   buttonText: {
     color: '#FFFFFF',
