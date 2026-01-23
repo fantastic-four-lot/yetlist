@@ -18,7 +18,7 @@ import { RefreshTokenModule } from 'src/refresh-token/refresh-token.module';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_ACCESS_SECRET,
-      signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN },
+      // signOptions: { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN },
     }),    // JwtModule.register({}),   
     UsersModule,
     RefreshTokenModule, 

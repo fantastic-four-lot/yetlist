@@ -1,99 +1,10 @@
-
-// // lib/auth/AuthContext.tsx
-// import React, { createContext, useContext, useEffect, useState } from 'react';
-// import { getToken, saveToken, clearToken } from './storage';
-// import { router } from 'expo-router';
-
-// type User = { id: string; email: string } | null;
-
-// type AuthContextType = {
-//   user: User;
-//   loading: boolean;
-//   login: (email: string, password: string) => Promise<void>;
-//   register: (email: string, password: string) => Promise<void>;
-//   logout: () => Promise<void>;
-//   debugClearToken: () => Promise<void>;
-// };
-
-// const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-//   const [user, setUser] = useState<User>(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     (async () => {
-//       try {
-//         const token = await getToken();
-//         if (token) {
-//           // TODO: call your /me endpoint to verify token
-//           setUser({ id: '1', email: 'demo@example.com' });
-//         } else {
-//           setUser(null);
-//         }
-//       } catch (e) {
-//         console.warn('Token check failed:', e);
-//         setUser(null);
-//       } finally {
-//         setLoading(false);
-//       }
-//     })();
-//   }, []);
-
-//   const login = async (email: string, password: string) => {
-//     // TODO: call your real API; for now accept any non-empty
-//     if (!email || !password) throw new Error('Invalid credentials');
-//     const token = 'mock-jwt-token';
-//     await saveToken(token);
-//     setUser({ id: '1', email });
-//     router.replace('/'); // force navigation to home
-//   };
-
-//   const register = async (email: string, password: string) => {
-//     const token = 'mock-jwt-token';
-//     await saveToken(token);
-//     setUser({ id: '1', email });
-//     router.replace('/(auth)/login');
-//   };
-
-//   const logout = async () => {
-//     await clearToken();
-//     setUser(null);
-//     router.replace('/(auth)/login'); // force navigation to login
-
-//   };
-
-//   const debugClearToken = async () => {
-//     await clearToken();
-//     setUser(null);
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ user, loading, login, register, logout, debugClearToken }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => {
-//   const ctx = useContext(AuthContext);
-//   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-//   return ctx;
-// };
-// ``
-
-
-
-
-
-
 // lib/auth/AuthContext.tsx
 import React, { createContext, use, useContext, useEffect, useState } from 'react';
-import { loginApi, registerApi, meApi, AuthResponse } from './authApi';
+import { loginApi, registerApi, meApi, AuthResponse, logoutApi } from './authApi';
 import { getToken, saveToken, clearToken } from './storage';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage/lib/typescript/AsyncStorage';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { Alert } from 'react-native';
+;
 
 type User = AuthResponse['user'] | null;
 
@@ -103,7 +14,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
-  checkExistingSession: () => Promise<void>;
+  handleLogout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -112,86 +23,90 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkExistingSession = async () => {
-    console.log('Checking existing session');
-    const token = getToken();
+    useEffect(() => {
+  let isMounted = true;
 
-    if (token) {
-      try {
-        setUser(await meApi(token));
-        // await saveToken(String(token));
-        router.replace('/'); // skip login
-        
-      } catch (err) {
-        // token expired → try efresh OR just clear & stay on login
-        // await AsyncStorage.removeItem('accessToken');
-        setUser(null);
-        await clearToken();
-        router.replace('/(auth)/login');
+  (async () => {
+    try {
+      const token = await getToken();
+      // console.log("Getting saved token:", token);
+
+      if (!token) {
+        if (isMounted) setUser(null);
+        return;
       }
+
+      // 🔥 Axios interceptor will auto-refresh if needed
+      const res = await meApi();
+
+      // console.log("Fetched user with access token:", res);
+
+      if (isMounted) {
+        setUser(res); // ✅ Set only the user object
+      }
+    } catch (e) {
+      console.log("Auth failed:", e);
+      await clearToken();
+      if (isMounted) setUser(null);
+    } finally {
+      if (isMounted) setLoading(false);
     }
+  })();
+
+  return () => {
+    isMounted = false;
   };
-
-  // useEffect(() => {
-  //   setLoading(false);
-  // }, [user]);
-
-  // On app load, check saved token and fetch user
-  useEffect(() => {
-    (async () => {
-      try {
-        const token =  getToken();
-        if (token) {
-          console.log('Found saved token, fetching user info'+token); 
-          // const { id,email,name } = await meApi(token);
-          setUser(await meApi(token));
-        } else {
-          setUser(null);
-        }
-      } catch (e) {
-        // console.warn('Session check failed:', e);
-        setUser(null);
-        await clearToken();
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+}, []);
 
 
-  // const login = async (email: string, password: string) => {
-  //   const { accessToken, user } = await loginApi({ email, password });
-  //   console.log('Login successful');
-    // await saveToken(accessToken);
-  //   console.log('token saved');
-  //   setUser(user);
-  //   router.replace('/'); // Navigate to home
-  // };
-    const login = async (email: string, password: string) => {
-      const { accessToken, user } = await loginApi({ email, password });
-      await saveToken(accessToken);
-      // (Optional) only if you’re also sending refresh token to frontend:
-      // await AsyncStorage.setItem('refreshToken', refreshToken);
+
+      const login = async (email: string, password: string) => {
+        const { user } = await loginApi({ email, password });
+        // console.log('Token before saving:'+JSON.stringify(user));
+        // await saveToken(accessToken);
         setUser(user);
         router.replace('/'); 
     };
 
-  const register = async (email: string, password: string, name?: string) => {
-    const response = await registerApi({ email, password, name });
-    if(response) {
-      router.replace('/(auth)/login');
-    }
+    const register = async (email: string, password: string, name?: string) => {
+      const response = await registerApi({ email, password, name });
+      if(response) {
+        router.replace('/(auth)/login');
+      }
 
-  };
+    };
 
   const logout = async () => {
+    await logoutApi();
     await clearToken();
     setUser(null);
     router.replace('/(auth)/login');
   };
 
+  const handleLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            logout();
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout ,checkExistingSession}}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

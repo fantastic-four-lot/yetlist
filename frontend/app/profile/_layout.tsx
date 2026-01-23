@@ -5,7 +5,7 @@ export default function ProfileLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: "none", 
+        animation: "slide_from_bottom", 
       }}
     />
   );

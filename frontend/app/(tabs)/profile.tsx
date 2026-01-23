@@ -145,7 +145,7 @@ export default function ProfileScreen({ navigation }: any) {
                   <ListItem
                     icon={<Ionicons name="person-circle-outline" size={20} color={PURPLE} />}
                     title="My Account"
-                    subtitle="Make changes to your account"
+                    // subtitle="Make changes to your account"
                     onPress={() => router.push('/profile/myAccount')}
                     // onPress={() => router.replace('./../components/myAccount')}
                   
@@ -153,19 +153,19 @@ export default function ProfileScreen({ navigation }: any) {
 
                   {/* <View style={styles.divider} /> */}
 
-                  <ListItem
+                  {/* <ListItem
                     icon={<MaterialCommunityIcons name="bank-outline" size={20} color={PURPLE} />}
                     title="Saved Beneficiary"
                     subtitle="Manage your saved account"
                     onPress={() => navigation?.navigate?.('Beneficiaries')}
-                  />
+                  /> */}
 
                   {/* <View style={styles.divider} /> */}
 
                   <ListItem
                     icon={<Ionicons name="finger-print-outline" size={20} color={PURPLE} />}
                     title="Face ID / Touch ID"
-                    subtitle="Manage your device security"
+                    // subtitle="Manage your device security"
                     right={
                       <Switch
                         value={faceIdEnabled}
@@ -181,7 +181,7 @@ export default function ProfileScreen({ navigation }: any) {
                   <ListItem
                     icon={<MaterialCommunityIcons name="shield-check-outline" size={20} color={PURPLE} />}
                     title="Two-Factor Authentication"
-                    subtitle="Further secure your account for safety"
+                    // subtitle="Further secure your account for safety"
                     onPress={() => navigation?.navigate?.('TwoFactor')}
                   />
 
@@ -190,7 +190,7 @@ export default function ProfileScreen({ navigation }: any) {
                   <ListItem
                     icon={<Ionicons name="exit-outline" size={20} color={PURPLE} />}
                     title="Log out"
-                    subtitle="Further secure your account for safety"
+                    // subtitle="Further secure your account for safety"
                     right={<Ionicons name="chevron-forward" size={20} color="#A0A0A0" />}
                     onPress={logout}
                   />

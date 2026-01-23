@@ -472,65 +472,10 @@ export const TravelPlanningScreen: React.FC = () => {
       const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
   return (
-    // <>
-    // <StatusBar translucent />
-    // <View style={styles.safe}>
-    //   <View style={styles.container}>
-    //     <View style={styles.headerRow}>
-    //       <View>
-    //         {/* <Text style={styles.title}>Travel & Planning</Text> */}
-    //         <Text style={styles.subtitle}>
-    //           Manage your leaves, trips & tickets in one place.
-    //         </Text>
-    //       </View>
-    //       <View style={styles.headerIconCircle}>
-    //         <Ionicons name="map" size={26} color="#fff" />
-    //       </View>
-    //     </View>
-
-    //     {/* Tabs */}
-    //     <View style={styles.tabRow}>
-    //       {TABS.map((tab) => {
-    //         const active = tab.key === activeTab;
-    //         return (
-    //           <TouchableOpacity
-    //             key={tab.key}
-    //             style={[styles.tabChip, active && styles.tabChipActive]}
-    //             onPress={() => handleTabPress(tab.key)}
-    //             activeOpacity={0.8}
-    //           >
-    //             <Ionicons
-    //               name={tab.icon}
-    //               size={18}
-    //               color={active ? "#0f172a" : "#1f406dff"}
-    //               style={{ marginRight: 6 }}
-    //             />
-    //             <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
-    //               {tab.label}
-    //             </Text>
-    //           </TouchableOpacity>
-    //         );
-    //       })}
-    //     </View>
-
-    //     {/* Content with animation */}
-    //     <Animated.View
-    //       style={{
-    //         flex: 1,
-    //         opacity: fadeAnim,
-    //         transform: [{ translateY: translateYAnim }],
-    //       }}
-    //     >
-    //       {renderContent}
-    //     </Animated.View>
-    //   </View>
-    // </View>
-    // </>
     <>
       <StatusBar translucent style="light"/>    
       <View style={[styles.overlay]}>
         <View 
-        // style={[{backgroundColor:"blue"}]}
         >
           <ScrollView
             contentContainerStyle={[
@@ -540,13 +485,6 @@ export const TravelPlanningScreen: React.FC = () => {
             showsVerticalScrollIndicator={false}
             stickyHeaderIndices={[0]}
             scrollEventThrottle={16}
-            // onScroll={(e) => {
-            //   const y = e.nativeEvent.contentOffset.y;
-            //   const shouldCompact = y > 40;
-            //   if (shouldCompact !== compactStats) {
-            //     setCompactStats(shouldCompact);
-            //   }
-            // }}
           >
             <View style={[styles.headerShadowWrap, themeContainerStyle]}>
               
@@ -1480,22 +1418,6 @@ tabLabel: {
     color: "#bae6fd",
     marginLeft: 4,
   },
-  // fab: {
-  //   position: "absolute",
-  //   bottom: 16,
-  //   right: 16,
-  //   width: 52,
-  //   height: 52,
-  //   borderRadius: 999,
-  //   backgroundColor: "#38bdf8",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   elevation: 6,
-  //   shadowColor: "#000",
-  //   shadowOpacity: 0.5,
-  //   shadowRadius: 8,
-  //   shadowOffset: { width: 0, height: 4 },
-  // },
   ticketCard: {
     borderRadius: 14,
     borderWidth: 1,

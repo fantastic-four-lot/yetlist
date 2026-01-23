@@ -14,7 +14,6 @@ import {
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { useColorScheme } from 'react-native';
 
 const PURPLE = '#5B4B8A';
 const TEXT_DARK = '#1E1E1E';

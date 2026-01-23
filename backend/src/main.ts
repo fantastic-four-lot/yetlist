@@ -28,7 +28,7 @@ app.enableCors({
     if (allowed.some(re => re.test(origin))) return callback(null, true);
     return callback(new Error(`CORS blocked for origin: ${origin}`), false);
   },
-  credentials: false,
+  credentials: true,
   methods: ['GET','POST','PUT','DELETE','PATCH','OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 });

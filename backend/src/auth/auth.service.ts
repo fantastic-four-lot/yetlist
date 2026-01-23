@@ -31,6 +31,16 @@ export class AuthService {
     }
     
   }
+  async getUserById(id: string) {
+    try {
+      const user = await this.usersService.findById(id);
+      if (!user) return null;
+      return { id: user._id.toHexString(), email: user.email , name: user.name };
+    } catch (err) {
+      return null;
+    }
+    
+  }
 
   
 
@@ -54,7 +64,9 @@ export class AuthService {
 
 
   async checkRefreshToken(incomingToken: string) {
+    try { 
     const payload = this.jwtService.verify(incomingToken, {secret: process.env.JWT_REFRESH_SECRET,});
+  
     // console.log('Payload from refresh token:', payload);
 
     const tokenDoc = await this.refreshTokenService.findActive(payload.id);
@@ -63,16 +75,10 @@ export class AuthService {
 
     const valid = await bcrypt.compare(incomingToken, tokenDoc.tokenHash);
     if (!valid) throw new UnauthorizedException();
-    // console.log('Refresh token is valid');
+  
 
     // revoke old token
     await this.refreshTokenService.revoke(tokenDoc._id);
-
-    // generate new refresh token
-    // const newRefresh = this.jwtService.sign(
-    //   { id: payload.id },
-    //   { expiresIn: "7d" }
-    // );
     const newRefresh = await this.generateRefreshToken({ id: payload.id});
     // console.log('Generated new refresh token');
 
@@ -87,15 +93,20 @@ export class AuthService {
     const user = await this.usersService.findById(payload.id);
     // console.log('Fetched user for access token:', user);
 
-    return {
-      accessToken,
-      newRefreshToken: newRefresh,
-      user: { _id: user._id, email: user.email, name: user.name },
-    };
+        return {
+          accessToken,
+          newRefreshToken: newRefresh,
+          user: { _id: user._id, email: user.email, name: user.name },
+        };
+      } catch (e) {
+      console.log('Error verifying refresh token:', e);
+      throw new UnauthorizedException();
+    }
   }
 
   async logout(refreshToken: string) {
-    const payload = this.jwtService.verify(refreshToken);
+    const payload = this.jwtService.verify(refreshToken, {secret: process.env.JWT_REFRESH_SECRET,});
+    // console.log('Payload from logout refresh token:', payload);
     await this.refreshTokenService.revokeAll(payload.id);
   }
 
@@ -116,17 +127,13 @@ export class AuthService {
   }
 
 
-  async generateRefreshToken(user: any) {
-        return this.jwtService.sign(
-        {
-          id: user.id,
-        },
-        {
-          secret: process.env.JWT_REFRESH_SECRET,
-          expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-        }
+    async generateRefreshToken(user: any) {
+      return this.jwtService.sign(
+        { id: user.id },
+        { secret: process.env.JWT_REFRESH_SECRET } 
       );
-  }
+    }
+
 
   async signup(createUserDto: any) {
     const user = await this.usersService.create(createUserDto);

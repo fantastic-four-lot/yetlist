@@ -12,6 +12,7 @@ import {
   Platform,
   ScrollView,
   useColorScheme,
+  Alert
   
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,28 +22,38 @@ import { router } from 'expo-router';
 import { useThemeColors } from '@/components/themed-view';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../lib/auth/AuthContext';
+import { api } from '../lib/auth/api';
 
 
 export default function MyAccountScreen({ navigation }: any) {
   const insets = useSafeAreaInsets();
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
-  const [name, setName] = useState('GFXAgency');
+  const [name, setName] = useState('');
   const [subtitle, setSubtitle] = useState('UI UX DESIGN');
-  const [email, setEmail] = useState('you@example.com');
+  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('+91 93123135');
   const [website, setWebsite] = useState('www.gfx.com');
   const [password, setPassword] = useState('••••••••');
   const { themeContainerStyle, themeTextStyle, themeCardStyle } = useThemeColors();
   const colorScheme= useColorScheme();
-  const { user,logout } = useAuth();
+  const { user,logout,handleLogout } = useAuth();
+
+  
 
 
- useEffect(()=>{
 
-setEmail(user?.email)
-setName(user?.name)
 
- })
+
+ useEffect(() => {
+
+  const getUserData = async () => {
+    const userData = await api.get('auth/me').then(res => res.data);
+    setEmail(userData.email);
+    setName(userData.name);
+  };
+
+  getUserData();
+}, []);
 
   const pickAvatar = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -77,6 +88,7 @@ setName(user?.name)
               <TouchableOpacity onPress={() => router.push('/profile')}>
                 <Ionicons name="chevron-back" size={24} color={themeTextStyle.color} />
               </TouchableOpacity>
+                <Text style={[ themeTextStyle]}>My Account</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                 <Ionicons name="settings-outline" size={22} color={themeTextStyle.color} />
               </TouchableOpacity>
@@ -107,15 +119,15 @@ setName(user?.name)
 
             {/* Form */}
             <View style={[styles.card, themeCardStyle]}>
-              {renderField('Name', name, setName, 'globe-outline', false, { themeTextStyle,  })}
+              {renderField('Name', name, setName, 'person-outline', false, { themeTextStyle,  })}
               {renderField('Your Email', email, setEmail, 'mail-outline',false, { themeTextStyle,  })}
               {renderField('Phone Number', phone, setPhone, 'call-outline', false, { themeTextStyle })}
-              {renderField('Password', password, setPassword, 'lock-closed-outline', true, { themeTextStyle })}
+              {/* {renderField('Password', password, setPassword, 'lock-closed-outline', true, { themeTextStyle })} */}
             </View>
 
             {/* Logout */}
             <View style={{ paddingHorizontal: 4 }}>
-              <TouchableOpacity onPress={logout} style={[styles.logoutBtn,{backgroundColor: colorScheme == "light" ? "#483A77" :'#483A77'}]}>
+              <TouchableOpacity onPress={handleLogout} style={[styles.logoutBtn,{backgroundColor: colorScheme == "light" ? "#483A77" :'#483A77'}]}>
                 <Text style={[styles.logoutText,{color: colorScheme == "light" ? "#FFFFFF" : '#FFFFFF'}]}>Logout</Text>
               </TouchableOpacity>
             </View>

@@ -16,14 +16,23 @@ export class RefreshTokenService {
       userId,
       tokenHash,
       revoked: false,
+      expiresAt: new Date(
+      Date.now() + 90 * 24 * 60 * 60 * 1000 // 30 days sliding window
+
+    ),
     });
   }
 
-  findActive(userId: ObjectId) {
-    return this.repo.findOne({
-      where: { userId, revoked: false },
-    });
-  }
+ findActive(userId: ObjectId) {
+  return this.repo.findOne({
+    where: {
+      userId,
+      revoked: false,
+      expiresAt: { $gt: new Date() }, // 🔥 critical
+    },
+  });
+}
+
 
   revoke(id: ObjectId) {
     return this.repo.update(id, { revoked: true });

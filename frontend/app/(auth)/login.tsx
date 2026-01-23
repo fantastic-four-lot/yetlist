@@ -27,24 +27,18 @@ export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const { login, checkExistingSession } = useAuth();
+  const { login } = useAuth();
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { themeContainerStyle, themeTextStyle, themeCardStyle } = useThemeColors();
   const colorScheme= useColorScheme();
   const insets = useSafeAreaInsets();
 
-  // useEffect(() => {
-  //   checkExistingSession();
-  // }, []);
-
-  
-  
-
   const onLogin = async () => {
     // TODO: your login logic (API call, validation, etc.)
     setErr(null);
     setLoading(true);
+    // console.log('Attempting login with', { email, password });
     try {
       await login(email.trim(), password);
     } catch (e: any) {
@@ -52,7 +46,7 @@ export default function SignInScreen({ navigation }: any) {
     } finally {
       setLoading(false);
     }
-    console.log({ email, password });
+    // console.log({ email, password });
   };
 
   const goToRegister = () => {
@@ -144,7 +138,7 @@ return (
 
                 {/* Bottom link */}
                 <View style={styles.bottomRow}>
-                  <Text style={[styles.bottomText,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>Don’t have an account? </Text>
+                  <Text style={[styles.bottomText,{color: colorScheme == "light" ? TEXT_DARK : '#FFFFFF'}]}>Don't have an account? </Text>
                   <TouchableOpacity onPress={goToRegister} activeOpacity={0.7}>
                     <Text style={styles.linkText}>Sign Up</Text>
                   </TouchableOpacity>

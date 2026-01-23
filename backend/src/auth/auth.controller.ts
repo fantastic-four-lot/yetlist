@@ -31,7 +31,7 @@ export class AuthController {
         @Res({ passthrough: true }) res: Response
         ) {
         const user = await this.authService.validateUser(dto.email, dto.password);
-        console.log('User attempting to log in:', user);
+        // console.log('User attempting to log in:', user);
 
         if (!user) {
             throw new UnauthorizedException("Invalid credentials");
@@ -41,10 +41,10 @@ export class AuthController {
 
         res.cookie("refresh_token", refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: false, // true in production
             sameSite: "none",  
             path: "/auth/refresh",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
+            maxAge: 90 * 24 * 60 * 60 * 1000, 
         });
 
         return {
@@ -56,6 +56,7 @@ export class AuthController {
     @Post("logout")
         async logout(@Req() req: Request, @Res() res: Response) {
         const refreshToken = req.cookies?.refresh_token;
+        // console.log('Logout requested, refresh token:', refreshToken);
 
         if (refreshToken) {
             await this.authService.logout(refreshToken);
@@ -63,8 +64,8 @@ export class AuthController {
 
         res.clearCookie("refresh_token", {
             httpOnly: true,
-            sameSite: "lax",
-            secure: false, // true in prod
+            sameSite: "none",
+            secure: false, // true in production
             path: "/",
         });
 
@@ -73,14 +74,18 @@ export class AuthController {
         });
         }
 
-
-
-
-   @Get('me')
-   @UseGuards(JwtAuthGuard)
-    async tokenValidation(@Req() req: any) {
-        const userdetails = await this.authService.getUserbyEmail(req.user.email);
-        return userdetails;
+//    @Get('me')
+//    @UseGuards(JwtAuthGuard)
+//     async tokenValidation(@Req() req: any) {
+//         console.log('Token validated for user:', req.user);
+//         const user = await this.authService.getUserbyEmail(req.user.email);
+//         return {user};
+//     }
+    @Get('me')
+    @UseGuards(JwtAuthGuard)
+    getMe(@Req() req: any) {
+    // console.log('Token validated for user:', req.user);
+    return req.user;
     }
 
     @Post("refresh")
@@ -90,6 +95,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
     ) {
     const oldRefreshToken = req.cookies?.refresh_token;
+    // console.log('Old Refresh Token from cookie:', oldRefreshToken);
     if (!oldRefreshToken) throw new UnauthorizedException();
 
     const { accessToken, newRefreshToken, user } =
@@ -97,10 +103,10 @@ export class AuthController {
 
     res.cookie("refresh_token", newRefreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: false, // true in production
         sameSite: "none",
         path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { accessToken, user };
