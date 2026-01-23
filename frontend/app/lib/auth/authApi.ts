@@ -70,6 +70,8 @@ async function request<T>(path: string, options: RequestInit): Promise<T> {
         
 
         console.log('API Request error:', { status: data });
+
+        
       throw new ApiError(message, { status: res.status, details: data });
     }
 

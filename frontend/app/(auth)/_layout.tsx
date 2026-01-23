@@ -15,7 +15,7 @@ export default function AuthLayout() {
       try {
         // const seen = await AsyncStorage.getItem('@has_seen_onboarding');
         const seen = await AsyncStorage.getItem('@has_seen_onboarding');
-         console.log(seen)
+        //  console.log(seen)
         setInitialRoute(seen === 'true' ? 'login' : 'Onboarding');
       } catch {
         setInitialRoute('Onboarding');

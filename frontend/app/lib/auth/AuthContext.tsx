@@ -142,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token =  getToken();
         if (token) {
-          console.log('Found saved token, fetching user info'+token); 
+          // console.log('Found saved token, fetching user info'+token); 
           // const { id,email,name } = await meApi(token);
           setUser(await meApi(token));
         } else {
