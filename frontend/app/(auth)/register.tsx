@@ -77,10 +77,12 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useAuth } from '../lib/auth/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function RegisterScreen({ navigation }: any) {
   const [fullName, setFullName] = useState('');
@@ -88,10 +90,16 @@ export default function RegisterScreen({ navigation }: any) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
   const [err, setErr] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+const PASSWORD_REGEX =/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,32}$/;
+
+    
+  const { register } = useAuth();
   const colorScheme= useColorScheme();
-   const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
 
   const onRegister = async () => {
     // TODO: add your register logic here
@@ -165,22 +173,64 @@ setErr(null);
               value={email}
               onChangeText={setEmail}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Enter password"
-              placeholderTextColor="#8C8C8C"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm password"
-              placeholderTextColor="#8C8C8C"
-              secureTextEntry
-              value={confirm}
-              onChangeText={setConfirm}
-            />
+            {/* Wrap password input to overlay the eye icon */}
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput]} // add right padding so text doesn't run under the icon
+                      placeholder="Enter password"
+                      placeholderTextColor="#8C8C8C"
+                      secureTextEntry={!showPassword}
+                      value={password}
+                      onChangeText={setPassword}
+                      returnKeyType="done"
+                      autoCapitalize="none"
+                      textContentType="password"
+                    />
+            
+                    <Pressable
+                      onPress={() => setShowPassword((prev) => !prev)}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                      style={styles.eyeButton}
+                    >
+                      <Ionicons
+                        name={showPassword ? 'eye-off' : 'eye'}
+                        size={22}
+                        color="#6B7280"
+                      />
+                    </Pressable>
+                  </View>
+           
+
+            {/* Wrap password input to overlay the eye icon */}
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={[styles.input, styles.passwordInput]} // add right padding so text doesn't run under the icon
+                      placeholder="Confirm password"
+                      placeholderTextColor="#8C8C8C"
+                      secureTextEntry={!showConfirmPassword}
+                      value={confirm}
+                      onChangeText={setConfirm}
+                      returnKeyType="done"
+                      autoCapitalize="none"
+                      textContentType="password"
+                    />
+            
+                    <Pressable
+                      onPress={() => setShowConfirmPassword((prev) => !prev)}
+                      hitSlop={8}
+                      accessibilityRole="button"
+                      accessibilityLabel={showConfirmPassword ? 'Hide password' : 'Show password'}
+                      style={styles.eyeButton}
+                    >
+                      <Ionicons
+                        name={showConfirmPassword ? 'eye-off' : 'eye'}
+                        size={22}
+                        color="#6B7280"
+                      />
+                    </Pressable>
+                  </View>
           </View>
 
           <TouchableOpacity style={styles.button} onPress={onRegister} activeOpacity={0.8}>
@@ -254,6 +304,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: TEXT_DARK,
   },
+   
+passwordContainer: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  passwordInput: {
+    paddingRight: 48, // space for the icon
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 14,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   button: {
     backgroundColor: PURPLE,
     borderRadius: 28,

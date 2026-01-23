@@ -14,6 +14,7 @@ import {
   ScrollView,
   Keyboard,
   Image,
+  Pressable,
 } from 'react-native';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import { useAuth } from '../lib/auth/AuthContext';
@@ -21,11 +22,13 @@ import { useThemeColors } from '@/components/themed-view';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage/lib/typescript/AsyncStorage';
+import { Ionicons } from '@expo/vector-icons';
 
 
 export default function SignInScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
   const [err, setErr] = useState<string | null>(null);
@@ -115,7 +118,7 @@ return (
                     onChangeText={setEmail}
                     returnKeyType="next"
                   />
-                  <TextInput
+                  {/* <TextInput
                     style={styles.input}
                     placeholder="Confirm password"
                     placeholderTextColor="#8C8C8C"
@@ -123,7 +126,38 @@ return (
                     value={password}
                     onChangeText={setPassword}
                     returnKeyType="done"
-                  />
+                  /> */}
+
+                  
+{/* Wrap password input to overlay the eye icon */}
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={[styles.input, styles.passwordInput]} // add right padding so text doesn't run under the icon
+          placeholder="Confirm password"
+          placeholderTextColor="#8C8C8C"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+          returnKeyType="done"
+          autoCapitalize="none"
+          textContentType="password"
+        />
+
+        <Pressable
+          onPress={() => setShowPassword((prev) => !prev)}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+          style={styles.eyeButton}
+        >
+          <Ionicons
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={22}
+            color="#6B7280"
+          />
+        </Pressable>
+      </View>
+
                 </View>
 
                 {/* Forgot password */}
@@ -210,6 +244,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: TEXT_DARK,
   },
+  
+passwordContainer: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  passwordInput: {
+    paddingRight: 48, // space for the icon
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 14,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   forgot: {
     color: PURPLE,
     fontWeight: '700',
